@@ -354,3 +354,6 @@ MigrationBackup/
 
 # VS Code Settings
 .vscode
+
+# Ignore output folder
+rl_out
