@@ -1,4 +1,4 @@
-from .ctrl_env import CtrlEnv
+from ctrl.ctrl_env import CtrlEnv
 from gymnasium.envs.registration import register
 
 register(
