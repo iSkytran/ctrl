@@ -6,6 +6,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.logger import configure
 from stable_baselines3.common.vec_env import VecFrameStack
 
+monitor = os.getenv("CTRL_MONITOR", 0)
 output_path = os.getenv("CTRL_OUTPUT_PATH", "./rl_out")
 checkpoint_frequency = os.getenv("CTRL_CHECKPOINT_FREQUENCY", 100000)
 timesteps = os.getenv("CTRL_TIMESTEPS", 20000000)
@@ -19,7 +20,7 @@ checkpoint_callback = CheckpointCallback(
     save_vecnormalize=True,
 )
 
-env = make_vec_env("ctrl", n_envs=1)
+env = make_vec_env("ctrl", n_envs=1, monitor_num=monitor)
 env = VecFrameStack(env, n_stack=4)
 model = PPO("CnnPolicy", env)
 model.learn(total_timesteps=timesteps, callback=checkpoint_callback)

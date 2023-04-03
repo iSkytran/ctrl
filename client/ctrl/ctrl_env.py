@@ -13,7 +13,7 @@ import zmq
 class CtrlEnv(gym.Env):
     metadata = {"render_modes": ["rgb_array"]}
 
-    def __init__(self, render_mode=None, monitor_num: int = 1) -> None:
+    def __init__(self, render_mode=None, monitor_num: int = 0) -> None:
         # Define spaces. 
         self.observation_space = Box(
             low=0, high=255, shape=(144, 256, 3), dtype=np.uint8
