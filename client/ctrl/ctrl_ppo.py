@@ -23,5 +23,6 @@ checkpoint_callback = CheckpointCallback(
 env = make_vec_env("ctrl", n_envs=1, monitor_num=monitor)
 env = VecFrameStack(env, n_stack=4)
 model = PPO("CnnPolicy", env)
+model.set_logger(logger)
 model.learn(total_timesteps=timesteps, callback=checkpoint_callback)
 model.save(output_path)
