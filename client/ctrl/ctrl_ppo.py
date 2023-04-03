@@ -20,7 +20,7 @@ checkpoint_callback = CheckpointCallback(
     save_vecnormalize=True,
 )
 
-env = make_vec_env("ctrl", n_envs=1, monitor_num=monitor)
+env = make_vec_env("ctrl", n_envs=1, env_kwargs={"monitor_num": monitor})
 env = VecFrameStack(env, n_stack=4)
 model = PPO("CnnPolicy", env)
 model.set_logger(logger)
