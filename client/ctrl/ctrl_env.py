@@ -69,7 +69,7 @@ class CtrlEnv(gym.Env):
         msg = self.socket.recv()
         msg = json.loads(msg)
         reward = int(msg[0])
-        terminated = msg[1] == "1"
+        terminated = int(msg[1]) == 1
 
         return self._get_obs(), reward, terminated, False, {}
 

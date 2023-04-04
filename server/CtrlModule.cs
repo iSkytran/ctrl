@@ -22,6 +22,7 @@ namespace Celeste.Mod.Ctrl
         private List<int> inputFrame;
         private int reward;
         private Vector2 prevCenter;
+        private int idleCount;
         private bool terminated;
 
         public CtrlModule()
@@ -34,6 +35,7 @@ namespace Celeste.Mod.Ctrl
             inputFrame = null;
             reward = -1;
             prevCenter = new Vector2(0);
+            idleCount = 0;
             terminated = false;
         }
 
@@ -83,7 +85,7 @@ namespace Celeste.Mod.Ctrl
         {
             playerReady = false;
             roomsVisited.Clear();
-            reward = -500;
+            reward = -50;
             terminated = true;
 
             // Reset to first room on death.
@@ -97,7 +99,7 @@ namespace Celeste.Mod.Ctrl
             if (!roomsVisited.Contains(next.Name))
             {
                 roomsVisited.Add(next.Name);
-                reward = 1000;
+                reward = 100;
             }
         }
 
@@ -119,7 +121,6 @@ namespace Celeste.Mod.Ctrl
         private void GameUpdate(On.Celeste.Celeste.orig_Update orig, Celeste self, GameTime gameTime)
         {
             // Custom stepping.
-            playerReady = false;
             if (playerReady)
             {
                 // Read agent command.
@@ -151,6 +152,17 @@ namespace Celeste.Mod.Ctrl
             float deltaY = -Convert.ToInt32(self.Center.Y - prevCenter.Y); // Up is negative.
             reward += Convert.ToInt32(Math.Sqrt(deltaX * deltaX + deltaY * deltaY));
             prevCenter = self.Center;
+
+            // If agent doesn't move for 1000 timesteps, terminate.
+            if (deltaX == 0 && deltaY == 0)
+            {
+                if (++idleCount >= 150)
+                {
+                    idleCount = 0;
+                    terminated = true;
+                }
+            }
+
             orig(self);
         }
 
