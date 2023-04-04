@@ -21,6 +21,7 @@ namespace Celeste.Mod.Ctrl
         private List<string> roomsVisited;
         private List<int> inputFrame;
         private int reward;
+        private Vector2 prevCenter;
         private bool terminated;
 
         public CtrlModule()
@@ -31,7 +32,8 @@ namespace Celeste.Mod.Ctrl
             playerReady = false;
             roomsVisited = new List<string>();
             inputFrame = null;
-            reward = 1;
+            reward = -1;
+            prevCenter = new Vector2(0);
             terminated = false;
         }
 
@@ -43,6 +45,7 @@ namespace Celeste.Mod.Ctrl
                 typeof(CtrlModule).GetMethod("GameTick", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
             );
             On.Celeste.Celeste.Update += GameUpdate;
+            On.Celeste.Player.Update += PlayerUpdate;
             On.Monocle.MInput.KeyboardData.Update += InputUpdate;
             Everest.Events.Player.OnSpawn += OnSpawn;
             Everest.Events.Player.OnDie += OnDie;
@@ -54,6 +57,7 @@ namespace Celeste.Mod.Ctrl
             On.Monocle.Engine.RunWithLogging -= GameRun;
             hookTick?.Dispose();
             On.Celeste.Celeste.Update -= GameUpdate;
+            On.Celeste.Player.Update -= PlayerUpdate;
             On.Monocle.MInput.KeyboardData.Update -= InputUpdate;
             Everest.Events.Player.OnSpawn -= OnSpawn;
             Everest.Events.Player.OnDie -= OnDie;
@@ -62,7 +66,8 @@ namespace Celeste.Mod.Ctrl
         }
 
         public delegate void orig_Tick(Game self);
-        public static void GameTick(orig_Tick orig, Game self) {
+        public static void GameTick(orig_Tick orig, Game self)
+        {
             DynamicData game = new DynamicData(self);
             game.Set("IsFixedTimeStep", false);
             orig(self);
@@ -70,6 +75,7 @@ namespace Celeste.Mod.Ctrl
 
         private void OnSpawn(Player player)
         {
+            prevCenter = player.Center;
             playerReady = true;
         }
 
@@ -77,7 +83,7 @@ namespace Celeste.Mod.Ctrl
         {
             playerReady = false;
             roomsVisited.Clear();
-            reward = -1000;
+            reward = -500;
             terminated = true;
 
             // Reset to first room on death.
@@ -113,6 +119,7 @@ namespace Celeste.Mod.Ctrl
         private void GameUpdate(On.Celeste.Celeste.orig_Update orig, Celeste self, GameTime gameTime)
         {
             // Custom stepping.
+            playerReady = false;
             if (playerReady)
             {
                 // Read agent command.
@@ -135,6 +142,16 @@ namespace Celeste.Mod.Ctrl
                 // Regular updates.
                 orig(self, gameTime);
             }
+        }
+
+        private void PlayerUpdate(On.Celeste.Player.orig_Update orig, global::Celeste.Player self)
+        {
+            // Naive reward of how much the agent moved toward the top right.
+            float deltaX = Convert.ToInt32(self.Center.X - prevCenter.X);
+            float deltaY = -Convert.ToInt32(self.Center.Y - prevCenter.Y); // Up is negative.
+            reward += Convert.ToInt32(Math.Sqrt(deltaX * deltaX + deltaY * deltaY));
+            prevCenter = self.Center;
+            orig(self);
         }
 
         private void InputUpdate(On.Monocle.MInput.KeyboardData.orig_Update orig, global::Monocle.MInput.KeyboardData self)
