@@ -85,7 +85,7 @@ namespace Celeste.Mod.Ctrl
         {
             playerReady = false;
             roomsVisited.Clear();
-            reward = -50;
+            reward -= 50;
             terminated = true;
 
             // Reset to first room on death.
@@ -99,7 +99,7 @@ namespace Celeste.Mod.Ctrl
             if (!roomsVisited.Contains(next.Name))
             {
                 roomsVisited.Add(next.Name);
-                reward = 100;
+                reward += 200;
             }
         }
 
@@ -164,6 +164,7 @@ namespace Celeste.Mod.Ctrl
                 if (++idleCount >= 150)
                 {
                     idleCount = 0;
+                    reward -= 100;
                     terminated = true;
                 }
             }
