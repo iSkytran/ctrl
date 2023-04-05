@@ -59,8 +59,6 @@ BenchmarkDotNet.Artifacts/
 # .NET Core
 project.lock.json
 project.fragment.lock.json
-# VS Code Settings
-.vscode
 
 artifacts/
 
@@ -351,9 +349,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
-
-# VS Code Settings
-.vscode
 
 # Ignore output folder
 rl_out

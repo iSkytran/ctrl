@@ -150,7 +150,12 @@ namespace Celeste.Mod.Ctrl
             // Naive reward of how much the agent moved toward the top right.
             float deltaX = Convert.ToInt32(self.Center.X - prevCenter.X);
             float deltaY = -Convert.ToInt32(self.Center.Y - prevCenter.Y); // Up is negative.
-            reward += Convert.ToInt32(Math.Sqrt(deltaX * deltaX + deltaY * deltaY));
+            int dist = Convert.ToInt32(Math.Sqrt(deltaX * deltaX + deltaY * deltaY)); // Dist is positive.
+            if (deltaX <= 0 || deltaY <= 0) {
+                // Only give positive rewards for moving up and to the right.
+                dist *= -1;
+            }
+            reward += dist;
             prevCenter = self.Center;
 
             // If agent doesn't move for 1000 timesteps, terminate.
