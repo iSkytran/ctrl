@@ -85,7 +85,7 @@ namespace Celeste.Mod.Ctrl
         {
             playerReady = false;
             roomsVisited.Clear();
-            reward -= 50;
+            reward -= 10;
             terminated = true;
 
             // Reset to first room on death.
@@ -151,8 +151,8 @@ namespace Celeste.Mod.Ctrl
             float deltaX = Convert.ToInt32(self.Center.X - prevCenter.X);
             float deltaY = -Convert.ToInt32(self.Center.Y - prevCenter.Y); // Up is negative.
             int dist = Convert.ToInt32(Math.Sqrt(deltaX * deltaX + deltaY * deltaY)); // Dist is positive.
-            if (deltaX <= 0 || deltaY <= 0) {
-                // Only give positive rewards for moving up and to the right.
+            if (deltaX < 0 || deltaY < 0) {
+                // Only give positive rewards for moving up and/or to the right.
                 dist *= -1;
             }
             reward += dist;
