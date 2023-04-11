@@ -29,7 +29,6 @@ class CtrlEnv(gym.Env):
         self.sct = mss.mss()
         self.monitor = self.sct.monitors[monitor_num]
 
-
         # Communication to C# component.
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
